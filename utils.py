@@ -9,6 +9,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from time import sleep
 from selenium.webdriver.support import expected_conditions as EC
 import pandasql as pdsql
+import shutil
 
 RESTAURANT_LINKS_PATH = "https://docs.google.com/spreadsheets/d/10juH2C6OD3Z0iZNlG9GcnI04gHnyw8dZKeQvbN6lbfo/export?gid=0&format=csv"
 SCRAPED_RESTAURANTS_PATH = "data/restaurants.duckdb"
@@ -143,6 +144,46 @@ def insert_reviews_information(db_conn, restaurant_id, reviews):
     """
     db_conn.execute(query)
 
+
+
+def save_dataset_to_parquet(db_conn=duckdb.connect('data/restaurants.duckdb')):
+    backup_data()
+    restaurant_query="""
+        COPY
+            (
+                SELECT re.restaurant_id, 
+                        re.restaurant_name, 
+                        re.restaurant_link, 
+                        re.restaurant_halal_certificate, 
+                        re.restaurant_address, 
+                        re.latitude, 
+                        re.longitude, 
+                        re.restaurant_contact, 
+                        r.reviews  FROM restaurant re 
+                LEFT JOIN (SELECT restaurant_id, 
+                                string_agg(comment_text, '\n\n\n') as reviews 
+                            FROM reviews GROUP BY restaurant_id) r 
+                ON re.restaurant_id = r.restaurant_id
+            )
+        TO 'data/raw/text/restaurants.parquet'
+        (FORMAT parquet);
+    """
+    db_conn.execute(restaurant_query)
+    
+    reviews_query="""
+        COPY
+            (
+                SELECT DISTINCT restaurant_id, comment_text
+                FROM reviews
+            )
+        TO 'data/raw/text/reviews.parquet'
+        (FORMAT parquet);
+    """
+    db_conn.execute(reviews_query)
+
+def backup_data():
+    shutil.copyfile('./data/restaurants.duckdb', './data/backup/restaurants.duckdb')
+    pass 
 
 def get_duplicated_restaurants(restaurant_links):
     df_links = pd.read_csv(restaurant_links)
