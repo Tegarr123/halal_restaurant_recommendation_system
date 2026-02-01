@@ -11,7 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import pandasql as pdsql
 
 RESTAURANT_LINKS_PATH = "https://docs.google.com/spreadsheets/d/10juH2C6OD3Z0iZNlG9GcnI04gHnyw8dZKeQvbN6lbfo/export?gid=0&format=csv"
-SCRAPED_RESTAURANTS_PATH = "dataset/restaurants.duckdb"
+SCRAPED_RESTAURANTS_PATH = "data/restaurants.duckdb"
 
 def init_firefox_driver(headless=False):
     options = Options()

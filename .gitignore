@@ -3,3 +3,6 @@ dataset/
 .dvc/cache/
 __pycache__/
 *.ipynb
+/data
+client_secret.json
+.dvc/config
