@@ -5,4 +5,4 @@ __pycache__/
 *.ipynb
 /data
 client_secret.json
-.dvc/config
+.dvc/config.local
