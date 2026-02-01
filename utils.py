@@ -32,6 +32,7 @@ def init_firefox_driver(headless=False):
     )
     return driver
 
+
 def get_restaurant_links():
     return pd.read_csv(RESTAURANT_LINKS_PATH).itertuples()
 
