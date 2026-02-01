@@ -1,0 +1,5 @@
+data/
+dataset/
+.dvc/cache/
+__pycache__/
+*.ipynb
